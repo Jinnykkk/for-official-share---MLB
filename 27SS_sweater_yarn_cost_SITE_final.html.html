@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<titleWSS Sweater yarn cost table</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#ffffff;
+  --card:rgba(255,255,255,0.06);
+  --card2:rgba(255,255,255,0.04);
+  --stroke:rgba(255,255,255,0.12);
+  --text:rgba(255,255,255,0.92);
+  --muted:rgba(255,255,255,0.65);
+  --muted2:rgba(255,255,255,0.45);
+  --accent:#7c3aed;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  color: rgba(15,23,42,0.96);
+  background: linear-gradient(180deg, rgba(245,243,255,1) 0%, rgba(243,232,255,1) 45%, rgba(237,233,254,1) 100%);
+}
+.container{max-width:1280px;margin:0 auto;padding:26px 18px 60px}
+.header{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between}
+.h1{font-size:28px;font-weight:800;letter-spacing:-0.02em;line-height:1.15}
+.sub{color:var(--muted);font-size:13px;margin-top:6px;max-width:980px;line-height:1.55}
+.badges{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.badge{background: rgba(255,255,255,0.88);border:1px solid var(--stroke);padding:10px 12px;border-radius:14px;min-width:160px}
+.badge .k{font-size:11px;color:var(--muted2);font-weight:700}
+.badge .v{font-size:16px;font-weight:800;margin-top:2px}
+.grid{display:grid;grid-template-columns: 1.2fr 0.8fr;gap:14px;margin-top:18px}
+@media(max-width:1050px){.grid{grid-template-columns:1fr}}
+.card{
+  background:linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.035));
+  border:1px solid var(--stroke);
+  border-radius:20px;
+  padding:16px 16px 14px;
+  box-shadow:0 16px 44px rgba(15,23,42,0.10);
+}
+.card h2{margin:0 0 10px 0;font-size:14px;letter-spacing:-0.01em}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.field{flex:1;min-width:150px;background: rgba(255,255,255,0.88);border:1px solid var(--stroke);border-radius:16px;padding:10px 12px}
+label{display:block;font-size:11px;color:var(--muted2);font-weight:800;margin-bottom:6px}
+input{width:100%;background:transparent;border:none;color: rgba(15,23,42,0.96);font-weight:800;font-size:14px;outline:none}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tab{cursor:pointer;user-select:none;padding:10px 12px;border-radius:14px;border:1px solid var(--stroke);
+     background: rgba(255,255,255,0.88);color:var(--muted);font-weight:800;font-size:13px}
+.tab.active{background:rgba(124,58,237,0.22);border-color:rgba(124,58,237,0.45);color: rgba(15,23,42,0.96)}
+.flex3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:12px}
+@media(max-width:1050px){.flex3{grid-template-columns:1fr}}
+.canvasBox{height:220px}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.pill{padding:8px 10px;border-radius:999px;border:1px solid var(--stroke);background: rgba(255,255,255,0.88);font-size:12px;color:var(--muted)}
+.pill strong{color: rgba(15,23,42,0.96)}
+.tableWrap{margin-top:12px;overflow:auto;border-radius:18px;border:1px solid var(--stroke);background: rgba(255,255,255,0.88)}
+table{width:100%;border-collapse:collapse;min-width:980px}
+th,td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.07);text-align:right;font-size:12px;white-space:nowrap}
+th{text-align:right;color:var(--muted2);font-weight:900;background: rgba(255,255,255,0.88);position:sticky;top:0}
+th:first-child, td:first-child{text-align:left}
+th:nth-child(2), td:nth-child(2){font-weight:900}
+tr:hover td{background: rgba(255,255,255,0.88)}
+.tag{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:900}
+.tight{background:rgba(239,68,68,0.16);border:1px solid rgba(239,68,68,0.35);color:#ffc9c9}
+.recTag{background:rgba(245,158,11,0.16);border:1px solid rgba(245,158,11,0.35);color:#ffe5b4}
+.good{background:rgba(34,197,94,0.18);border:1px solid rgba(34,197,94,0.35);color:#bff7cf}
+.footer{margin-top:14px;color:var(--muted2);font-size:11px;line-height:1.45}
+.miniCallout{margin-top:10px;padding:12px 12px;border-radius:14px;border:1px solid rgba(15,23,42,0.16);
+background:linear-gradient(180deg, rgba(79,70,229,0.06), rgba(255,255,255,0.90));
+}
+.miniTitle{font-weight:900;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:rgba(15,23,42,0.62)}
+.miniValue{margin-top:6px;font-weight:900;font-size:14px;color:rgba(15,23,42,0.92)}
+.miniDesc{margin-top:6px;font-size:12px;color:rgba(15,23,42,0.60)}
+.thSub{margin-top:4px;font-size:11px;font-weight:800;color:rgba(15,23,42,0.55);white-space:nowrap}
+.summarySub{margin-top:6px;font-size:12px;font-weight:800;color:rgba(15,23,42,0.62)}
+.summaryLabel{font-size:12px;font-weight:900;color:rgba(15,23,42,0.55);letter-spacing:.06em;text-transform:uppercase}
+.summaryValue{font-size:18px;font-weight:900;color:rgba(15,23,42,0.92)}
+
+/* === Readability overrides (light background) === */
+h1,h2,h3,h4,h5,h6{color: rgba(15,23,42,0.94) !important;}
+.panelTitle,.sectionTitle,.cardTitle,.chartTitle,.title,.kpiTitle,.tabTitle{color: rgba(15,23,42,0.92) !important;}
+label,.label,.caption,.muted,.hint,.smallNote{color: rgba(15,23,42,0.72) !important;}
+th,td{color: rgba(15,23,42,0.90);}
+.table thead th{color: rgba(15,23,42,0.80) !important;}
+.tabBtn,.tab-btn,.pillBtn,.chip{color: rgba(15,23,42,0.88) !important;}
+
+/* === KPI / Summary label readability === */
+.kpi label, .kpiLabel, .kpi-title, .kpiTitle, .metricLabel, .statLabel, .stat-label,
+.summaryLabel, .summary-label, .summaryTitle, .summary-title, .pillLabel,
+.badgeLabel, .chipLabel, .inputLabel, .input-label{
+  color: rgba(15,23,42,0.72) !important;
+}
+.kpiValue, .kpi-value, .metricValue, .statValue, .stat-value,
+.summaryValue, .summary-value{
+  color: rgba(15,23,42,0.94) !important;
+}
+.kpi, .stat, .metric, .summaryCard, .summary-card{
+  color: rgba(15,23,42,0.90) !important;
+}
+.kpi * , .stat * , .metric * , .summaryCard * , .summary-card *{
+  text-shadow: none !important;
+}
+/* Headline helper text under main title */
+.headerHint,.header-hint,.subtitle,.subnote,.note,.hint{
+  color: rgba(15,23,42,0.68) !important;
+}
+/* Make table column headers explicitly dark */
+thead th, .table thead th{
+  color: rgba(15,23,42,0.78) !important;
+}
+/* Tabs/buttons text */
+.tabBtn,.tab-btn,.pillBtn,.chip,.segBtn,.seg-btn{
+  color: rgba(15,23,42,0.88) !important;
+}
+
+/* === FORCE ALL TEXT BLACK (requested) === */
+:root{
+  --ink:#0f172a;
+}
+html,body{color:var(--ink) !important;}
+*{color:var(--ink) !important;}
+/* Exceptions: keep borders/backgrounds as-is */
+svg *{fill: currentColor !important; stroke: currentColor !important;}
+a{color:var(--ink) !important;}
+input,textarea,select,button{color:var(--ink) !important;}
+input::placeholder,textarea::placeholder{color:rgba(15,23,42,0.65) !important;}
+/* Dropdown / tooltip / popover */
+.tooltip,.tippy-box,[role="tooltip"],.popover,.dropdown,.menu,.selectMenu,.select-menu{
+  color:var(--ink) !important;
+}
+.tooltip *, .popover *, .dropdown *, .menu *{color:var(--ink) !important;}
+
+
+.kpiSub{
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(15,23,42,0.85) !important;
+  letter-spacing: -0.2px;
+}
+
+</style>
+<title>27SS sweater yarn cost</title>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div>
+      <div class="h1">Yarn Table (26SS 구조 기반) + 26SS Cost Mix</div>
+</div>
+    <div class="badges">
+      <div class="badge"><div class="k">Target MU (VAT+)</div><div class="v" id="b_mu"></div></div>
+      <div class="badge"><div class="k">FX (KRW/USD)</div><div class="v" id="b_fx"></div></div>
+      <div class="badge"><div class="k">KC YY (kg)</div><div class="v" id="b_yy_kc">
+<div class="summarySub">26SS Avg Yarn: $10.95/kg</div>
+</div></div>
+      <div class="badge"><div class="k">KP YY (kg)</div><div class="v" id="b_yy_kp">
+<div class="summarySub">26SS Avg Yarn: $11.35/kg</div>
+</div></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT: TABLE first -->
+    <div class="card">
+      <h2>Yarn Cost Table</h2>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="KC">KC</div>
+        <div class="tab" data-tab="KP">KP</div>
+        <div class="tab" data-tab="TTL">KC/KP Total</div>
+      </div>
+
+      <div class="tableWrap">
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th>Price Tag (KRW)</th>
+              <th>Max Yarn ($/kg)</th>
+              <th>Status</th>
+              <th>Allowed FOB (USD)</th>
+              <th>Yarn Budget (USD)</th>
+              <th>YY (kg)<div class="thSub"></div></th>
+              <th>Allowed Cost (VAT+ KRW)</th>
+              <th>Allowed Cost (VAT- KRW)</th>
+              <th>Yarn Share (26SS, VAT-)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="footer">
+        Status는 “상한(Max Yarn)의 여유” 기준입니다. 상한이 낮을수록(타이트) 실제 원사 선택이 어렵습니다.
+      </div>
+    </div>
+
+    <!-- RIGHT: Inputs + Donuts -->
+    <div class="card">
+      <h2>Inputs (바꾸면 테이블 자동 재계산)</h2>
+      <div class="row">
+        <div class="field">
+          <label>Target MU (VAT+ 기준)</label>
+          <input id="mu" type="number" step="0.01" value="5.7">
+        </div>
+        <div class="field">
+          <label>FX (KRW/USD)</label>
+          <input id="fx" type="number" step="1" value="1440">
+        </div>
+        <div class="field">
+          <label>VAT Rate</label>
+          <input id="vat" type="number" step="0.01" value="0.1">
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <div class="field">
+          <label>KC YY (kg)</label>
+          <input id="yy_kc" type="number" step="0.01" value="0.55">
+        </div>
+        <div class="field">
+          <label>KP YY (kg)</label>
+          <input id="yy_kp" type="number" step="0.01" value="0.35">
+        </div>
+        <div class="field">
+          <label>TTL YY (kg)</label>
+          <input id="yy_ttl" type="number" step="0.01" value="0.45">
+        </div>
+      </div>
+
+      <div style="margin-top:14px">
+        <h2>26SS 실제 원가 구성비 (VAT-)</h2>
+        <div class="flex3">
+          <div class="card" style="padding:14px">
+            <h2>KC</h2>
+            <div class="canvasBox"><canvas id="mix_c1"></canvas></div>
+            <div class="pills" id="pill1"></div>
+          </div>
+          <div class="card" style="padding:14px">
+            <h2>KP</h2>
+            <div class="canvasBox"><canvas id="mix_c2"></canvas></div>
+            <div class="pills" id="pill2"></div>
+          </div>
+          <div class="card" style="padding:14px">
+            <h2>KC/KP Total</h2>
+            <div class="canvasBox"><canvas id="mix_c3"></canvas></div>
+            <div class="pills" id="pill3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = {"defaults": {"mu": 5.7, "fx": 1440, "vat": 0.1, "yy": {"KC": 0.55, "KP": 0.35, "TTL": 0.45}, "mix26": {"KC": {"yarn": 0.2619877488776415, "cm": 0.5070441371422035, "margin": 0.1411069426095908, "artwork": 0.035308582597008954, "trims": 0.03519805201452632, "tariff": 0.009836721855251494, "residual": 0.009517814903777344}, "KP": {"yarn": 0.198078868156548, "cm": 0.5466611527557895, "margin": 0.15483413659290896, "artwork": 0.04580877257832922, "trims": 0.030777188078494902, "tariff": 0.010198446301682559, "residual": 0.013641435536246749}, "TTL": {"yarn": 0.23066952831789117, "cm": 0.5264565826047239, "margin": 0.14783339132846146, "artwork": 0.04045395152029231, "trims": 0.03303158759624168, "tariff": 0.01001565966331724, "residual": 0.011539298969072243}}}, "price_tags": [129000, 139000, 149000, 159000, 169000, 179000, 189000, 199000, 209000, 219000, 229000, 239000, 249000, 259000, 269000, 279000]};
+let currentTab = "KC";
+
+function fmtKRW(x) { return Math.round(x).toLocaleString('ko-KR'); }
+function fmtUSD(x) { return (Math.round(x*100)/100).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+function updateBadges(mu, fx, yykc, yykp) {
+  document.getElementById('b_mu').textContent = mu.toFixed(2);
+  document.getElementById('b_fx').textContent = Math.round(fx).toLocaleString('ko-KR');
+  document.getElementById('b_yy_kc').textContent = yykc.toFixed(2);
+  document.getElementById('b_yy_kp').textContent = yykp.toFixed(2);
+}
+
+function statusTag(maxY) {
+  if (maxY < 9) return ['타이트', 'tight'];
+  if (maxY < 11) return ['추천', 'recTag'];
+  return ['여유', 'good'];
+}
+
+function calcRow(pt, mu, fx, vat, yy, shareYarn) {
+  const allowedVatP = pt / mu;
+  const allowedVatM = allowedVatP / (1+vat);
+  const allowedFob = allowedVatM / fx;
+  const yarnBudget = allowedFob * shareYarn;
+  const maxYarn = yarnBudget / yy;
+  return {pt, allowedVatP, allowedVatM, allowedFob, yarnBudget, yy, maxYarn, shareYarn};
+}
+
+function rebuildTable(tab) {
+  const mu = parseFloat(document.getElementById('mu').value);
+  const fx = parseFloat(document.getElementById('fx').value);
+  const vat = parseFloat(document.getElementById('vat').value);
+  const yy_kc = parseFloat(document.getElementById('yy_kc').value);
+  const yy_kp = parseFloat(document.getElementById('yy_kp').value);
+  const yy_ttl = parseFloat(document.getElementById('yy_ttl').value);
+  updateBadges(mu, fx, yy_kc, yy_kp);
+
+  const tbody = document.querySelector("#tbl tbody");
+  tbody.innerHTML = "";
+
+  const shareYarn = DATA.defaults.mix26[tab].yarn;
+  const yy = (tab==="KC") ? yy_kc : (tab==="KP" ? yy_kp : yy_ttl);
+
+  for (const pt of DATA.price_tags) {
+    const r = calcRow(pt, mu, fx, vat, yy, shareYarn);
+    const [label, cls] = statusTag(r.maxYarn);
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${fmtKRW(r.pt)}</td>
+      <td>${fmtUSD(r.maxYarn)}</td>
+      <td><span class="tag ${cls}">${label}</span></td>
+      <td>${fmtUSD(r.allowedFob)}</td>
+      <td>${fmtUSD(r.yarnBudget)}</td>
+      <td>${r.yy.toFixed(2)}</td>
+      <td>${fmtKRW(r.allowedVatP)}</td>
+      <td>${fmtKRW(r.allowedVatM)}</td>
+      <td>${Math.round(r.shareYarn*1000)/10}%</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+function buildPills(id, mix) {
+  const container = document.getElementById(id);
+  container.innerHTML = "";
+  const items = [
+    ["원자재(Yarn)", mix.yarn],
+    ["공임(CM: 편직·링킹·후가공)", mix.cm],
+    ["마진/경비", mix.margin],
+    ["아트웍", mix.artwork],
+    ["부자재", mix.trims],
+    ["관부가세/물품대", mix.tariff],
+    ["기타/잔여", mix.residual],
+  ];
+  for (const [k,v] of items) {
+    const div = document.createElement("div");
+    div.className = "pill";
+    div.innerHTML = `${k} <strong>${Math.round(v*1000)/10}%</strong>`;
+    container.appendChild(div);
+  }
+}
+
+function donutOptions() {
+  return {
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{enabled:true, callbacks:{label:(ctx)=>`${ctx.label}: ${ctx.parsed}%`}}
+    },
+    cutout:'70%',
+  };
+}
+
+let c1, c2, c3;
+
+function drawMixCharts() {
+  const m1 = DATA.defaults.mix26.KC;
+  const m2 = DATA.defaults.mix26.KP;
+  const m3 = DATA.defaults.mix26.TTL;
+
+  const makeData = (mix)=>({
+    labels:["원자재(Yarn)","공임(CM: 편직·링킹·후가공)","마진/경비","아트웍","부자재","관부가세/물품대","기타/잔여"],
+    datasets:[{
+      data:[
+      Math.round(mix.yarn*1000)/10,
+      Math.round(mix.cm*1000)/10,
+      Math.round(mix.margin*1000)/10,
+      Math.round(mix.artwork*1000)/10,
+      Math.round(mix.trims*1000)/10,
+      Math.round(mix.tariff*1000)/10,
+      Math.round(mix.residual*1000)/10
+    ],
+      backgroundColor:[
+        "rgba(124,58,237,0.85)",   // Yarn - violet
+        "rgba(55,65,81,0.85)",     // CM - dark gray (de-emphasized)
+        "rgba(245,158,11,0.78)",   // Margin - amber
+        "rgba(236,72,153,0.78)",   // Artwork - pink
+        "rgba(59,130,246,0.75)",   // Trims - blue
+        "rgba(16,185,129,0.75)",   // Tariff - green
+        "rgba(148,163,184,0.45)"   // Residual - light gray
+      ],
+      borderColor:"rgba(0,0,0,0)",
+      hoverOffset:4
+    }]
+  });
+
+  if (c1) c1.destroy(); if (c2) c2.destroy(); if (c3) c3.destroy();
+  c1 = new Chart(document.getElementById('mix_c1'), {type:'doughnut', data:makeData(m1), options:donutOptions()});
+  c2 = new Chart(document.getElementById('mix_c2'), {type:'doughnut', data:makeData(m2), options:donutOptions()});
+  c3 = new Chart(document.getElementById('mix_c3'), {type:'doughnut', data:makeData(m3), options:donutOptions()});
+  buildPills("pill1", m1); buildPills("pill2", m2); buildPills("pill3", m3);
+}
+
+document.querySelectorAll('[data-tab]').forEach(t=>{
+  t.addEventListener("click", ()=>{
+    document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    currentTab = t.dataset.tab;
+    rebuildTable(currentTab);
+  });
+});
+
+["mu","fx","vat","yy_kc","yy_kp","yy_ttl"].forEach(id=>{
+  document.getElementById(id).addEventListener("input", ()=>rebuildTable(currentTab));
+});
+
+drawMixCharts();
+rebuildTable(currentTab);
+</script>
+
+<script>
+(function(){
+  const INK = '#0f172a';
+  // Chart.js v3+ global defaults
+  if (window.Chart && window.Chart.defaults){
+    try{
+      window.Chart.defaults.color = INK;
+      if (window.Chart.defaults.plugins && window.Chart.defaults.plugins.legend){
+        window.Chart.defaults.plugins.legend.labels = window.Chart.defaults.plugins.legend.labels || {};
+        window.Chart.defaults.plugins.legend.labels.color = INK;
+      }
+      if (window.Chart.defaults.plugins && window.Chart.defaults.plugins.tooltip){
+        const tt = window.Chart.defaults.plugins.tooltip;
+        tt.titleColor = INK;
+        tt.bodyColor = INK;
+        tt.footerColor = INK;
+        tt.backgroundColor = 'rgba(255,255,255,0.96)';
+        tt.borderColor = 'rgba(15,23,42,0.16)';
+        tt.borderWidth = 1;
+      }
+    }catch(e){}
+  }
+})();
+</script>
+
+</body>
+</html>
